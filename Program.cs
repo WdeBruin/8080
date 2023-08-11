@@ -1,4 +1,4 @@
-﻿byte[] rom = File.ReadAllBytes("invaders.h");
+﻿byte[] rom = File.ReadAllBytes("invaders");
 int pc = 0;
 while (pc < rom.Length)
 {
