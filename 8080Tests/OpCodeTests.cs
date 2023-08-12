@@ -1,5 +1,7 @@
 using cpu;
 
+namespace Tests;
+
 public class OpCodeTests
 {
     [Fact]

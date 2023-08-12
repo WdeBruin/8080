@@ -13,7 +13,7 @@ public class OpCode
 
         switch (opCode)
         {
-            case 0x00: UnimplementedInstruction(state); break;
+            case 0x00: break; //NOP
             case 0x01: UnimplementedInstruction(state); break;
             case 0x02: UnimplementedInstruction(state); break;
             case 0x03: UnimplementedInstruction(state); break;
