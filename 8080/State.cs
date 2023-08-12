@@ -21,7 +21,7 @@ public struct State8080
     public byte l;
     public UInt16 sp;
     public UInt16 pc;
-    public unsafe byte* memory;
+    public byte[] memory;
     public ConditionCodes cc;
     public byte int_enable; 
 }
