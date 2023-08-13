@@ -1,3 +1,5 @@
+using System.Runtime.Intrinsics.X86;
+
 namespace cpu;
 
 public class OpCode
@@ -7,20 +9,64 @@ public class OpCode
         Console.WriteLine($"Error: Unimplemented instruction");
     }
 
-    public void Emulate8080Op(State8080 state)
+    public void Emulate8080Op(ref State8080 state)
     {
         byte opCode = state.memory[state.pc];
+        ushort opBytes = 1;
 
         switch (opCode)
         {
             case 0x00: break; //NOP
-            case 0x01: UnimplementedInstruction(state); break;
-            case 0x02: UnimplementedInstruction(state); break;
-            case 0x03: UnimplementedInstruction(state); break;
-            case 0x04: UnimplementedInstruction(state); break;
-            case 0x05: UnimplementedInstruction(state); break;
-            case 0x06: UnimplementedInstruction(state); break;
-            case 0x07: UnimplementedInstruction(state); break;
+            case 0x01: // LXI B
+                opBytes = 3;
+                state.b = state.memory[state.pc + 2];
+                state.c = state.memory[state.pc + 1];
+                break;
+            case 0x02: // STAX B 
+                {
+                    ushort addr = (ushort)(state.b << 8 | state.c);
+                    state.memory[addr] = state.a;
+                }
+                break;
+            case 0x03: // INX B
+                {
+                    ushort res = (ushort)((state.b << 8 | state.c) + 1);
+                    state.b = (byte)(res >> 8);
+                    state.c = (byte)res;
+                }
+                break;
+            case 0x04: // INR B
+                {
+                    byte res = (byte)(state.b + 1);
+                    state.b = res;
+
+                    state.cc.z = res == 0;
+                    state.cc.s = (res & 0x80) != 0;
+                    state.cc.p = (res % 2) == 0;
+                }
+                break;
+            case 0x05: // DCR B
+                {
+                    byte res = (byte)(state.b - 1);
+                    state.b = res;
+
+                    state.cc.z = res == 0;
+                    state.cc.s = (res & 0x80) != 0;
+                    state.cc.p = (res % 2) == 0;
+                }
+                break;
+            case 0x06: // MVI B
+                opBytes = 2;
+                state.b = state.memory[state.pc + 1];
+                break;
+            case 0x07: // RLC
+                {
+                    bool hbit = (byte)((state.a >> 7) & 0xff) == 1;
+                    state.a = (byte)((state.a << 1) | (hbit ? 1 : 0));
+
+                    state.cc.cy = hbit;
+                }
+                break;
             case 0x09: UnimplementedInstruction(state); break;
             case 0x0A: UnimplementedInstruction(state); break;
             case 0x0B: UnimplementedInstruction(state); break;
@@ -258,6 +304,6 @@ public class OpCode
             case 0xFE: UnimplementedInstruction(state); break;
             case 0xFF: UnimplementedInstruction(state); break;
         }
-        state.pc += 1;
+        state.pc += opBytes;
     }
 }

@@ -1,13 +1,15 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace cpu;
 
 public struct ConditionCodes
 {
-    public byte z;
-    public byte s;
-    public byte p;
-    public byte cy;
-    public byte ac;
-    public byte pad;
+    public bool z;
+    public bool s;
+    public bool p;
+    public bool cy;
+    public bool ac;
+    public bool pad;
 }
 
 public struct State8080 
@@ -19,9 +21,9 @@ public struct State8080
     public byte e;
     public byte h;
     public byte l;
-    public UInt16 sp;
-    public UInt16 pc;
+    public ushort sp;
+    public ushort pc;
     public byte[] memory;
     public ConditionCodes cc;
-    public byte int_enable; 
+    public byte int_enable;
 }
