@@ -67,9 +67,29 @@ public class OpCode
                     state.cc.cy = hbit;
                 }
                 break;
-            case 0x09: UnimplementedInstruction(state); break;
-            case 0x0A: UnimplementedInstruction(state); break;
-            case 0x0B: UnimplementedInstruction(state); break;
+            case 0x09: // DAD B
+                {
+                    ushort toAdd = (ushort)(state.b << 8 | state.c);
+                    ushort hl = (ushort)(state.h << 8 | state.l);
+                    int res = toAdd + hl;
+                    state.cc.cy = (res & 0x1_0000) > 0; // set carry if bit 17 is set (overflow)
+                    state.h = (byte)(res >> 8);
+                    state.l = (byte)res;
+                }
+                break;
+            case 0x0A: // LDAX B
+                {
+                    ushort addr = (ushort)(state.b << 8 | state.c);
+                    state.a = state.memory[addr];
+                }
+                break;
+            case 0x0B: // DCX B
+                {
+                    ushort res = (ushort)((state.b << 8 | state.c) - 1);
+                    state.b = (byte)(res >> 8);
+                    state.c = (byte)res;
+                }
+                break;
             case 0x0C: UnimplementedInstruction(state); break;
             case 0x0D: UnimplementedInstruction(state); break;
             case 0x0E: UnimplementedInstruction(state); break;

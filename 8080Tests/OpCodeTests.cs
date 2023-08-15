@@ -276,7 +276,7 @@ public class OpCodeTests
     }
 
     [Fact]
-    public void Dad_should_add_bc_hl()
+    public void DadB_should_add_bc_hl()
     {
         // Arrange
         OpCode sut = new();
@@ -301,8 +301,8 @@ public class OpCodeTests
         Assert.False(state.cc.cy);
     }
 
-        [Fact]
-    public void Dad_should_add_bc_hl_carry()
+    [Fact]
+    public void DadB_should_add_bc_hl_carry()
     {
         // Arrange
         OpCode sut = new();
@@ -314,7 +314,6 @@ public class OpCodeTests
             c = 0xff,
             h = 0x00,
             l = 0x01,
-            cc = new ConditionCodes { cy = true }
         };
 
         // Act
@@ -325,5 +324,52 @@ public class OpCodeTests
         Assert.Equal(0x00, state.h);
         Assert.Equal(0x00, state.l);
         Assert.True(state.cc.cy);
+    }
+
+    [Fact]
+    public void LdaxB_should_move_bc_to_accumulator_indirect()
+    {
+        // Arrange
+        byte[] mem = new byte[0xffff];
+        mem[0] = 0x0a;
+        mem[0xff08] = 0x88;
+        OpCode sut = new();
+
+        State8080 state = new State8080
+        {
+            memory = mem,
+            pc = 0x00,
+            a = 0x00,
+            b = 0xff,
+            c = 0x08
+        };
+
+        // Act
+        sut.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0x01, state.pc);
+        Assert.Equal(0x88, state.a);
+    }
+
+    [Fact]
+    public void DcxB_should_decr_pair_bc()
+    {
+        // Arrange
+        OpCode sut = new();
+        State8080 state = new State8080
+        {
+            memory = new byte[] { 0x0b },
+            pc = 0x00,
+            b = 0x07,
+            c = 0x07
+        };
+
+        // Act
+        sut.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0x01, state.pc);
+        Assert.Equal(0x0706, state.b << 8 | state.c);
     }
 }
