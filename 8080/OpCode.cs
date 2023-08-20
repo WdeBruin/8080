@@ -110,7 +110,10 @@ public class OpCode
                     state.cc.p = (res % 2) == 0;
                 }
                 break;
-            case 0x0E: UnimplementedInstruction(state); break;
+            case 0x0E: // MVI C
+                opBytes = 2;
+                state.c = state.memory[state.pc + 1];
+                break;
             case 0x0F: UnimplementedInstruction(state); break;
             case 0x11: UnimplementedInstruction(state); break;
             case 0x12: UnimplementedInstruction(state); break;
@@ -135,7 +138,10 @@ public class OpCode
                     state.cc.p = (res % 2) == 0;
                 }
                 break;
-            case 0x16: UnimplementedInstruction(state); break;
+            case 0x16: // MVI D
+                opBytes = 2;
+                state.d = state.memory[state.pc + 1];
+                break;
             case 0x17: UnimplementedInstruction(state); break;
             case 0x19: UnimplementedInstruction(state); break;
             case 0x1A: UnimplementedInstruction(state); break;
@@ -160,7 +166,10 @@ public class OpCode
                     state.cc.p = (res % 2) == 0;
                 }
                 break;
-            case 0x1E: UnimplementedInstruction(state); break;
+            case 0x1E: // MVI E
+                opBytes = 2;
+                state.e = state.memory[state.pc + 1];
+                break;
             case 0x1F: UnimplementedInstruction(state); break;
             case 0x21: UnimplementedInstruction(state); break;
             case 0x22: UnimplementedInstruction(state); break;
@@ -185,7 +194,10 @@ public class OpCode
                     state.cc.p = (res % 2) == 0;
                 }
                 break;
-            case 0x26: UnimplementedInstruction(state); break;
+            case 0x26: // MVI H
+                opBytes = 2;
+                state.h = state.memory[state.pc + 1];
+                break;
             case 0x27: UnimplementedInstruction(state); break;
             case 0x29: UnimplementedInstruction(state); break;
             case 0x2A: UnimplementedInstruction(state); break;
@@ -210,7 +222,10 @@ public class OpCode
                     state.cc.p = (res % 2) == 0;
                 }
                 break;
-            case 0x2E: UnimplementedInstruction(state); break;
+            case 0x2E: // MVI L
+                opBytes = 2;
+                state.l = state.memory[state.pc + 1];
+                break;
             case 0x2F: UnimplementedInstruction(state); break;
             case 0x31: UnimplementedInstruction(state); break;
             case 0x32: UnimplementedInstruction(state); break;
@@ -242,7 +257,10 @@ public class OpCode
                     state.cc.p = (res % 2) == 0;
                 }
                 break;
-            case 0x3E: UnimplementedInstruction(state); break;
+            case 0x3E: // MVI A
+                opBytes = 2;
+                state.a = state.memory[state.pc + 1];
+                break;
             case 0x3F: UnimplementedInstruction(state); break;
             case 0x40: UnimplementedInstruction(state); break;
             case 0x41: UnimplementedInstruction(state); break;

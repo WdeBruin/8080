@@ -589,24 +589,91 @@ public class OpCodeTests
         Assert.False(state.cc.cy);
     }
 
-    [Fact]
-    public void MviB_should_move_to_b()
+    [Theory] // "b", "c", "d", "e", "h", "l", "a"
+    [InlineData("b"), InlineData("c"), InlineData("d"), InlineData("e"), InlineData("h"), InlineData("l"), InlineData("a")]
+    public void MviR_should_move_to_R(string reg)
     {
         // Arrange
         OpCode sut = new();
         State8080 state = new State8080
         {
-            memory = new byte[] { 0x06, 0x88 },
+            memory = new byte[] { 0, 0x88 },
             pc = 0x00,
-            b = 0x00
         };
+
+        switch (reg)
+        {
+            case "b":
+                {
+                    state.memory[0] = 0x06;
+                }
+                break;
+            case "c":
+                {
+                    state.memory[0] = 0x0e;
+                }
+                break;
+            case "d":
+                {
+                    state.memory[0] = 0x16;
+                }
+                break;
+            case "e":
+                {
+                    state.memory[0] = 0x1e;
+                }
+                break;
+            case "h":
+                {
+                    state.memory[0] = 0x26;
+                }
+                break;
+            case "l":
+                {
+                    state.memory[0] = 0x2e;
+                }
+                break;
+            case "a":
+                {
+                    state.memory[0] = 0x3e;
+                }
+                break;
+            default:
+                break;
+        }
 
         // Act
         sut.Emulate8080Op(ref state);
 
         // Assert
         Assert.Equal(0x02, state.pc);
-        Assert.Equal(0x88, state.b);
+
+        switch (reg)
+        {
+            case "b":
+                Assert.Equal(0x88, state.b);
+                break;
+            case "c":
+                Assert.Equal(0x88, state.c);
+                break;
+            case "d":
+                Assert.Equal(0x88, state.d);
+                break;
+            case "e":
+                Assert.Equal(0x88, state.e);
+                break;
+            case "h":
+                Assert.Equal(0x88, state.h);
+                break;
+            case "l":
+                Assert.Equal(0x88, state.l);
+                break;
+            case "a":
+                Assert.Equal(0x88, state.a);
+                break;
+            default:
+                break;
+        }
     }
 
     [Fact]
