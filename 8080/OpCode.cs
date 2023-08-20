@@ -114,7 +114,14 @@ public class OpCode
                 opBytes = 2;
                 state.c = state.memory[state.pc + 1];
                 break;
-            case 0x0F: UnimplementedInstruction(state); break;
+            case 0x0F: // RRC
+                {
+                    bool lbit = (byte)(state.a & 0x01) == 1;
+                    state.a = (byte)((lbit ? 0x80 : 0) | (state.a >> 1));
+
+                    state.cc.cy = lbit;
+                }
+                break;
             case 0x11: UnimplementedInstruction(state); break;
             case 0x12: UnimplementedInstruction(state); break;
             case 0x13: UnimplementedInstruction(state); break;

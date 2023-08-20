@@ -677,7 +677,7 @@ public class OpCodeTests
     }
 
     [Fact]
-    public void Rlc_should_rot_acc_carry()
+    public void Rlc_should_rotleft_acc_carry()
     {
         // Arrange
         OpCode sut = new();
@@ -698,7 +698,7 @@ public class OpCodeTests
     }
 
     [Fact]
-    public void Rlc_should_rot_acc_carry_zero()
+    public void Rlc_should_rotleft_acc_carry_zero()
     {
         // Arrange
         OpCode sut = new();
@@ -706,7 +706,8 @@ public class OpCodeTests
         {
             memory = new byte[] { 0x07 },
             pc = 0x00,
-            a = 0b00000001 // 1, if rotate left it is 0b10 (2)
+            a = 0b00000001, // 1, if rotate left it is 0b10 (2)
+            cc = new ConditionCodes { cy = true }
         };
 
         // Act
@@ -814,5 +815,48 @@ public class OpCodeTests
         // Assert
         Assert.Equal(0x01, state.pc);
         Assert.Equal(0x0706, state.b << 8 | state.c);
+    }
+
+    [Fact]
+    public void Rrc_should_rotright_acc_carry()
+    {
+        // Arrange
+        OpCode sut = new();
+        State8080 state = new State8080
+        {
+            memory = new byte[] { 0x0f },
+            pc = 0x00,
+            a = 0b00000011 // rotate right and it is 0b10000001 
+        };
+
+        // Act
+        sut.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0x01, state.pc);
+        Assert.Equal(0b10000001, state.a);
+        Assert.True(state.cc.cy);
+    }
+
+    [Fact]
+    public void Rrc_should_rotright_acc_carry_zero()
+    {
+        // Arrange
+        OpCode sut = new();
+        State8080 state = new State8080
+        {
+            memory = new byte[] { 0x0f },
+            pc = 0x00,
+            a = 0b10000000, // rotate right and itll be 0b01
+            cc = new ConditionCodes { cy = true }
+        };
+
+        // Act
+        sut.Emulate8080Op(ref state);
+
+        // Assert
+        Assert.Equal(0x01, state.pc);
+        Assert.Equal(0x40, state.a);
+        Assert.False(state.cc.cy);
     }
 }
