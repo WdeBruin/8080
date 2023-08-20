@@ -90,36 +90,126 @@ public class OpCode
                     state.c = (byte)res;
                 }
                 break;
-            case 0x0C: UnimplementedInstruction(state); break;
-            case 0x0D: UnimplementedInstruction(state); break;
+            case 0x0C: // INR C
+                {
+                    byte res = (byte)(state.c + 1);
+                    state.c = res;
+
+                    state.cc.z = res == 0;
+                    state.cc.s = (res & 0x80) != 0;
+                    state.cc.p = (res % 2) == 0;
+                }
+                break;
+            case 0x0D: // DCR C
+                {
+                    byte res = (byte)(state.c - 1);
+                    state.c = res;
+
+                    state.cc.z = res == 0;
+                    state.cc.s = (res & 0x80) != 0;
+                    state.cc.p = (res % 2) == 0;
+                }
+                break;
             case 0x0E: UnimplementedInstruction(state); break;
             case 0x0F: UnimplementedInstruction(state); break;
             case 0x11: UnimplementedInstruction(state); break;
             case 0x12: UnimplementedInstruction(state); break;
             case 0x13: UnimplementedInstruction(state); break;
-            case 0x14: UnimplementedInstruction(state); break;
-            case 0x15: UnimplementedInstruction(state); break;
+            case 0x14: // INR D
+                {
+                    byte res = (byte)(state.d + 1);
+                    state.d = res;
+
+                    state.cc.z = res == 0;
+                    state.cc.s = (res & 0x80) != 0;
+                    state.cc.p = (res % 2) == 0;
+                }
+                break;
+            case 0x15: // DCR D
+                {
+                    byte res = (byte)(state.d - 1);
+                    state.d = res;
+
+                    state.cc.z = res == 0;
+                    state.cc.s = (res & 0x80) != 0;
+                    state.cc.p = (res % 2) == 0;
+                }
+                break;
             case 0x16: UnimplementedInstruction(state); break;
             case 0x17: UnimplementedInstruction(state); break;
             case 0x19: UnimplementedInstruction(state); break;
             case 0x1A: UnimplementedInstruction(state); break;
             case 0x1B: UnimplementedInstruction(state); break;
-            case 0x1C: UnimplementedInstruction(state); break;
-            case 0x1D: UnimplementedInstruction(state); break;
+            case 0x1C: // INR E
+                {
+                    byte res = (byte)(state.e + 1);
+                    state.e = res;
+
+                    state.cc.z = res == 0;
+                    state.cc.s = (res & 0x80) != 0;
+                    state.cc.p = (res % 2) == 0;
+                }
+                break;
+            case 0x1D: // DCR E
+                {
+                    byte res = (byte)(state.e - 1);
+                    state.e = res;
+
+                    state.cc.z = res == 0;
+                    state.cc.s = (res & 0x80) != 0;
+                    state.cc.p = (res % 2) == 0;
+                }
+                break;
             case 0x1E: UnimplementedInstruction(state); break;
             case 0x1F: UnimplementedInstruction(state); break;
             case 0x21: UnimplementedInstruction(state); break;
             case 0x22: UnimplementedInstruction(state); break;
             case 0x23: UnimplementedInstruction(state); break;
-            case 0x24: UnimplementedInstruction(state); break;
-            case 0x25: UnimplementedInstruction(state); break;
+            case 0x24: // INR H
+                {
+                    byte res = (byte)(state.h + 1);
+                    state.h = res;
+
+                    state.cc.z = res == 0;
+                    state.cc.s = (res & 0x80) != 0;
+                    state.cc.p = (res % 2) == 0;
+                }
+                break;
+            case 0x25: // DCR H
+                {
+                    byte res = (byte)(state.h - 1);
+                    state.h = res;
+
+                    state.cc.z = res == 0;
+                    state.cc.s = (res & 0x80) != 0;
+                    state.cc.p = (res % 2) == 0;
+                }
+                break;
             case 0x26: UnimplementedInstruction(state); break;
             case 0x27: UnimplementedInstruction(state); break;
             case 0x29: UnimplementedInstruction(state); break;
             case 0x2A: UnimplementedInstruction(state); break;
             case 0x2B: UnimplementedInstruction(state); break;
-            case 0x2C: UnimplementedInstruction(state); break;
-            case 0x2D: UnimplementedInstruction(state); break;
+            case 0x2C: // INR L
+                {
+                    byte res = (byte)(state.l + 1);
+                    state.l = res;
+
+                    state.cc.z = res == 0;
+                    state.cc.s = (res & 0x80) != 0;
+                    state.cc.p = (res % 2) == 0;
+                }
+                break;
+            case 0x2D: // DCR L
+                {
+                    byte res = (byte)(state.l - 1);
+                    state.l = res;
+
+                    state.cc.z = res == 0;
+                    state.cc.s = (res & 0x80) != 0;
+                    state.cc.p = (res % 2) == 0;
+                }
+                break;
             case 0x2E: UnimplementedInstruction(state); break;
             case 0x2F: UnimplementedInstruction(state); break;
             case 0x31: UnimplementedInstruction(state); break;
@@ -132,8 +222,26 @@ public class OpCode
             case 0x39: UnimplementedInstruction(state); break;
             case 0x3A: UnimplementedInstruction(state); break;
             case 0x3B: UnimplementedInstruction(state); break;
-            case 0x3C: UnimplementedInstruction(state); break;
-            case 0x3D: UnimplementedInstruction(state); break;
+            case 0x3C: // INR A
+                {
+                    byte res = (byte)(state.a + 1);
+                    state.a = res;
+
+                    state.cc.z = res == 0;
+                    state.cc.s = (res & 0x80) != 0;
+                    state.cc.p = (res % 2) == 0;
+                }
+                break;
+            case 0x3D: // DCR A
+                {
+                    byte res = (byte)(state.a - 1);
+                    state.a = res;
+
+                    state.cc.z = res == 0;
+                    state.cc.s = (res & 0x80) != 0;
+                    state.cc.p = (res % 2) == 0;
+                }
+                break;
             case 0x3E: UnimplementedInstruction(state); break;
             case 0x3F: UnimplementedInstruction(state); break;
             case 0x40: UnimplementedInstruction(state); break;

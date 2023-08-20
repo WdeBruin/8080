@@ -88,125 +88,501 @@ public class OpCodeTests
         Assert.Equal(0x0708, state.b << 8 | state.c);
     }
 
-    [Fact]
-    public void InrB_should_increment_b_flags()
+    [Theory] // "b", "c", "d", "e", "h", "l", "a"
+    [InlineData("b"), InlineData("c"), InlineData("d"), InlineData("e"), InlineData("h"), InlineData("l"), InlineData("a")]
+    public void Inr_should_increment_flags(string reg)
     {
         // Arrange
         OpCode sut = new();
         State8080 state = new State8080
         {
-            memory = new byte[] { 0x04 },
+            memory = new byte[1] { 0x04 },
             pc = 0x00,
-            b = 0x07,
             cc = new ConditionCodes { s = true, z = true, cy = true }
         };
+
+        switch (reg)
+        {
+            case "b":
+                {
+                    state.memory[0] = 0x04;
+                    state.b = 0x07;
+                }
+                break;
+            case "c":
+                {
+                    state.memory[0] = 0x0c;
+                    state.c = 0x07;
+                }
+                break;
+            case "d":
+                {
+                    state.memory[0] = 0x14;
+                    state.d = 0x07;
+                }
+                break;
+            case "e":
+                {
+                    state.memory[0] = 0x1c;
+                    state.e = 0x07;
+                }
+                break;
+            case "h":
+                {
+                    state.memory[0] = 0x24;
+                    state.h = 0x07;
+                }
+                break;
+            case "l":
+                {
+                    state.memory[0] = 0x2c;
+                    state.l = 0x07;
+                }
+                break;
+            case "a":
+                {
+                    state.memory[0] = 0x3c;
+                    state.a = 0x07;
+                }
+                break;
+            default:
+                break;
+        }
 
         // Act
         sut.Emulate8080Op(ref state);
 
         // Assert
         Assert.Equal(0x01, state.pc);
-        Assert.Equal(0x08, state.b);
+
+        switch (reg)
+        {
+            case "b":
+                Assert.Equal(0x08, state.b);
+                break;
+            case "c":
+                Assert.Equal(0x08, state.c);
+                break;
+            case "d":
+                Assert.Equal(0x08, state.d);
+                break;
+            case "e":
+                Assert.Equal(0x08, state.e);
+                break;
+            case "h":
+                Assert.Equal(0x08, state.h);
+                break;
+            case "l":
+                Assert.Equal(0x08, state.l);
+                break;
+            case "a":
+                Assert.Equal(0x08, state.a);
+                break;
+            default:
+                break;
+        }
         Assert.False(state.cc.z);
         Assert.False(state.cc.s);
         Assert.True(state.cc.p);
         Assert.True(state.cc.cy);
     }
 
-    [Fact]
-    public void InrB_should_increment_b_flags_overflow()
+    [Theory]
+    // "b", "c", "d", "e", "h", "l", "a"
+    [InlineData("b"), InlineData("c"), InlineData("d"), InlineData("e"), InlineData("h"), InlineData("l"), InlineData("a")]
+    public void Inr_should_increment_flags_overflow(string reg)
     {
         // Arrange
         OpCode sut = new();
         State8080 state = new State8080
         {
-            memory = new byte[] { 0x04 },
+            memory = new byte[1],
             pc = 0x00,
             b = 0xff,
             cc = new ConditionCodes { s = true }
         };
+
+        switch (reg)
+        {
+            case "b":
+                {
+                    state.memory[0] = 0x04;
+                    state.b = 0xff;
+                }
+                break;
+            case "c":
+                {
+                    state.memory[0] = 0x0c;
+                    state.c = 0xff;
+                }
+                break;
+            case "d":
+                {
+                    state.memory[0] = 0x14;
+                    state.d = 0xff;
+                }
+                break;
+            case "e":
+                {
+                    state.memory[0] = 0x1c;
+                    state.e = 0xff;
+                }
+                break;
+            case "h":
+                {
+                    state.memory[0] = 0x24;
+                    state.h = 0xff;
+                }
+                break;
+            case "l":
+                {
+                    state.memory[0] = 0x2c;
+                    state.l = 0xff;
+                }
+                break;
+            case "a":
+                {
+                    state.memory[0] = 0x3c;
+                    state.a = 0xff;
+                }
+                break;
+            default:
+                break;
+        }
 
         // Act
         sut.Emulate8080Op(ref state);
 
         // Assert
         Assert.Equal(0x01, state.pc);
-        Assert.Equal(0x00, state.b);
+
+        switch (reg)
+        {
+            case "b":
+                Assert.Equal(0x00, state.b);
+                break;
+            case "c":
+                Assert.Equal(0x00, state.c);
+                break;
+            case "d":
+                Assert.Equal(0x00, state.d);
+                break;
+            case "e":
+                Assert.Equal(0x00, state.e);
+                break;
+            case "h":
+                Assert.Equal(0x00, state.h);
+                break;
+            case "l":
+                Assert.Equal(0x00, state.l);
+                break;
+            case "a":
+                Assert.Equal(0x00, state.a);
+                break;
+            default:
+                break;
+        }
+
         Assert.True(state.cc.z);
         Assert.False(state.cc.s);
         Assert.True(state.cc.p);
         Assert.False(state.cc.cy);
     }
 
-    [Fact]
-    public void InrB_should_increment_b_flags2()
+    [Theory] // "b", "c", "d", "e", "h", "l", "a"
+    [InlineData("b"), InlineData("c"), InlineData("d"), InlineData("e"), InlineData("h"), InlineData("l"), InlineData("a")]
+    public void Inr_should_increment_flags2(string reg)
     {
         // Arrange
         OpCode sut = new();
         State8080 state = new State8080
         {
-            memory = new byte[] { 0x04 },
+            memory = new byte[1],
             pc = 0x00,
-            b = 0xf0,
             cc = new ConditionCodes { z = true, p = true, cy = true }
         };
+
+        switch (reg)
+        {
+            case "b":
+                {
+                    state.memory[0] = 0x04;
+                    state.b = 0xf0;
+                }
+                break;
+            case "c":
+                {
+                    state.memory[0] = 0x0c;
+                    state.c = 0xf0;
+                }
+                break;
+            case "d":
+                {
+                    state.memory[0] = 0x14;
+                    state.d = 0xf0;
+                }
+                break;
+            case "e":
+                {
+                    state.memory[0] = 0x1c;
+                    state.e = 0xf0;
+                }
+                break;
+            case "h":
+                {
+                    state.memory[0] = 0x24;
+                    state.h = 0xf0;
+                }
+                break;
+            case "l":
+                {
+                    state.memory[0] = 0x2c;
+                    state.l = 0xf0;
+                }
+                break;
+            case "a":
+                {
+                    state.memory[0] = 0x3c;
+                    state.a = 0xf0;
+                }
+                break;
+            default:
+                break;
+        }
 
         // Act
         sut.Emulate8080Op(ref state);
 
         // Assert
         Assert.Equal(0x01, state.pc);
-        Assert.Equal(0xf1, state.b);
+
+        switch (reg)
+        {
+            case "b":
+                Assert.Equal(0xf1, state.b);
+                break;
+            case "c":
+                Assert.Equal(0xf1, state.c);
+                break;
+            case "d":
+                Assert.Equal(0xf1, state.d);
+                break;
+            case "e":
+                Assert.Equal(0xf1, state.e);
+                break;
+            case "h":
+                Assert.Equal(0xf1, state.h);
+                break;
+            case "l":
+                Assert.Equal(0xf1, state.l);
+                break;
+            case "a":
+                Assert.Equal(0xf1, state.a);
+                break;
+            default:
+                break;
+        }
+
         Assert.False(state.cc.z);
         Assert.True(state.cc.s);
         Assert.False(state.cc.p);
         Assert.True(state.cc.cy);
     }
 
-    [Fact]
-    public void DcrB_should_decr_b_flags()
+    [Theory] // "b", "c", "d", "e", "h", "l", "a"
+    [InlineData("b"), InlineData("c"), InlineData("d"), InlineData("e"), InlineData("h"), InlineData("l"), InlineData("a")]
+    public void Dcr_should_decr_flags(string reg)
     {
         // Arrange
         OpCode sut = new();
         State8080 state = new State8080
         {
-            memory = new byte[] { 0x05 },
+            memory = new byte[1],
             pc = 0x00,
-            b = 0x07,
             cc = new ConditionCodes { s = true, z = true, cy = true }
         };
+
+        switch (reg)
+        {
+            case "b":
+                {
+                    state.memory[0] = 0x05;
+                    state.b = 0x07;
+                }
+                break;
+            case "c":
+                {
+                    state.memory[0] = 0x0d;
+                    state.c = 0x07;
+                }
+                break;
+            case "d":
+                {
+                    state.memory[0] = 0x15;
+                    state.d = 0x07;
+                }
+                break;
+            case "e":
+                {
+                    state.memory[0] = 0x1d;
+                    state.e = 0x07;
+                }
+                break;
+            case "h":
+                {
+                    state.memory[0] = 0x25;
+                    state.h = 0x07;
+                }
+                break;
+            case "l":
+                {
+                    state.memory[0] = 0x2d;
+                    state.l = 0x07;
+                }
+                break;
+            case "a":
+                {
+                    state.memory[0] = 0x3d;
+                    state.a = 0x07;
+                }
+                break;
+            default:
+                break;
+        }
 
         // Act
         sut.Emulate8080Op(ref state);
 
         // Assert
         Assert.Equal(0x01, state.pc);
-        Assert.Equal(0x06, state.b);
+
+        switch (reg)
+        {
+            case "b":
+                Assert.Equal(0x06, state.b);
+                break;
+            case "c":
+                Assert.Equal(0x06, state.c);
+                break;
+            case "d":
+                Assert.Equal(0x06, state.d);
+                break;
+            case "e":
+                Assert.Equal(0x06, state.e);
+                break;
+            case "h":
+                Assert.Equal(0x06, state.h);
+                break;
+            case "l":
+                Assert.Equal(0x06, state.l);
+                break;
+            case "a":
+                Assert.Equal(0x06, state.a);
+                break;
+            default:
+                break;
+        }
+
         Assert.False(state.cc.z);
         Assert.False(state.cc.s);
         Assert.True(state.cc.p);
         Assert.True(state.cc.cy);
     }
 
-    [Fact]
-    public void DcrB_should_decr_b_flags_overflow()
+    [Theory] // "b", "c", "d", "e", "h", "l", "a"
+    [InlineData("b"), InlineData("c"), InlineData("d"), InlineData("e"), InlineData("h"), InlineData("l"), InlineData("a")]
+    public void DcrB_should_decr_b_flags_overflow(string reg)
     {
         // Arrange
         OpCode sut = new();
         State8080 state = new State8080
         {
-            memory = new byte[] { 0x05 },
+            memory = new byte[1],
             pc = 0x00,
-            b = 0x00,
             cc = new ConditionCodes { z = true, p = true }
         };
+
+        switch (reg)
+        {
+            case "b":
+                {
+                    state.memory[0] = 0x05;
+                    state.b = 0x00;
+                }
+                break;
+            case "c":
+                {
+                    state.memory[0] = 0x0d;
+                    state.c = 0x00;
+                }
+                break;
+            case "d":
+                {
+                    state.memory[0] = 0x15;
+                    state.d = 0x00;
+                }
+                break;
+            case "e":
+                {
+                    state.memory[0] = 0x1d;
+                    state.e = 0x00;
+                }
+                break;
+            case "h":
+                {
+                    state.memory[0] = 0x25;
+                    state.h = 0x00;
+                }
+                break;
+            case "l":
+                {
+                    state.memory[0] = 0x2d;
+                    state.l = 0x00;
+                }
+                break;
+            case "a":
+                {
+                    state.memory[0] = 0x3d;
+                    state.a = 0x00;
+                }
+                break;
+            default:
+                break;
+        }
 
         // Act
         sut.Emulate8080Op(ref state);
 
         // Assert
         Assert.Equal(0x01, state.pc);
-        Assert.Equal(0xff, state.b);
+
+        switch (reg)
+        {
+            case "b":
+                Assert.Equal(0xff, state.b);
+                break;
+            case "c":
+                Assert.Equal(0xff, state.c);
+                break;
+            case "d":
+                Assert.Equal(0xff, state.d);
+                break;
+            case "e":
+                Assert.Equal(0xff, state.e);
+                break;
+            case "h":
+                Assert.Equal(0xff, state.h);
+                break;
+            case "l":
+                Assert.Equal(0xff, state.l);
+                break;
+            case "a":
+                Assert.Equal(0xff, state.a);
+                break;
+            default:
+                break;
+        }
+
         Assert.False(state.cc.z);
         Assert.True(state.cc.s);
         Assert.False(state.cc.p);
