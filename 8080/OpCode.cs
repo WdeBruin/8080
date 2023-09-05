@@ -121,8 +121,19 @@ public class OpCode
                 state.d = state.memory[state.pc + 2];
                 state.e = state.memory[state.pc + 1];
                 break;
-            case 0x12: UnimplementedInstruction(state); break;
-            case 0x13: UnimplementedInstruction(state); break;
+            case 0x12: // STAX D
+                {
+                    ushort addr = (ushort)(state.d << 8 | state.e);
+                    state.memory[addr] = state.a;
+                }
+                break;
+            case 0x13: // INX D
+                {
+                    ushort res = (ushort)((state.d << 8 | state.e) + 1);
+                    state.d = (byte)(res >> 8);
+                    state.e = (byte)res;
+                }
+                break;
             case 0x14: // INR D
                 {
                     byte res = (byte)(state.d + 1);
@@ -184,7 +195,13 @@ public class OpCode
                 state.l = state.memory[state.pc + 1];
                 break;
             case 0x22: UnimplementedInstruction(state); break;
-            case 0x23: UnimplementedInstruction(state); break;
+            case 0x23: // INX H
+                {
+                    ushort res = (ushort)((state.h << 8 | state.l) + 1);
+                    state.h = (byte)(res >> 8);
+                    state.l = (byte)res;
+                }
+                break;
             case 0x24: // INR H
                 {
                     byte res = (byte)(state.h + 1);
@@ -245,7 +262,9 @@ public class OpCode
                 state.sp = (ushort)((ushort)(state.memory[state.pc + 2] << 8) | state.memory[state.pc + 1]);
                 break;
             case 0x32: UnimplementedInstruction(state); break;
-            case 0x33: UnimplementedInstruction(state); break;
+            case 0x33: // INX SP
+                state.sp++;
+                break;
             case 0x34: UnimplementedInstruction(state); break;
             case 0x35: UnimplementedInstruction(state); break;
             case 0x36: UnimplementedInstruction(state); break;

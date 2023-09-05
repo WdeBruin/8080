@@ -1,3 +1,4 @@
+using System.Collections;
 using cpu;
 
 namespace Tests;
@@ -84,12 +85,18 @@ public class OpCodeTests
         Assert.Equal(0x03, state.pc);
     }
 
-    [Fact]
-    public void StaxB_should_move_accumulator_to_bc_indirect_0xff01()
+    [Theory]
+    [InlineData("b"), InlineData("d")]
+    public void Stax_should_move_accumulator_to_pair_indirect(string reg)
     {
         // Arrange
         byte[] mem = new byte[0xffff];
-        mem[0] = 0x02;
+
+        if (reg == "b")
+            mem[0] = 0x02;
+        if (reg == "d")
+            mem[0] = 0x12;
+            
         OpCode sut = new();
 
         State8080 state = new State8080
@@ -98,7 +105,9 @@ public class OpCodeTests
             pc = 0x00,
             a = 0x08,
             b = 0xff,
-            c = 0x01
+            c = 0x01,
+            d = 0xee,
+            e = 0x02
         };
 
         // Act
@@ -106,28 +115,66 @@ public class OpCodeTests
 
         // Assert
         Assert.Equal(0x01, state.pc);
-        Assert.Equal(0x08, state.memory[0xff01]);
+
+        if (reg == "b")
+            Assert.Equal(0x08, state.memory[0xff01]);
+
+        if (reg == "d")
+            Assert.Equal(0x08, state.memory[0xee02]);
     }
 
-    [Fact]
-    public void InxB_should_increment_pair_bc()
+    [Theory]
+    [InlineData("b"), InlineData("d"), InlineData("h"), InlineData("sp")]
+    public void Inx_should_increment_pair(string reg)
     {
         // Arrange
         OpCode sut = new();
         State8080 state = new State8080
         {
-            memory = new byte[] { 0x03 },
+            memory = new byte[1],
             pc = 0x00,
             b = 0x07,
-            c = 0x07
+            c = 0x07,
+            d = 0x08,
+            e = 0x08,
+            h = 0x09,
+            l = 0x09,
+            sp = 0x0a0a
         };
+
+        switch (reg)
+        {
+            case "b":
+                state.memory[0] = 0x03;
+                break;
+                case "d":
+                state.memory[0] = 0x13;
+                break;
+                case "h":
+                state.memory[0] = 0x23;
+                break;
+                case "sp":
+                state.memory[0] = 0x33;
+                break;
+        }
 
         // Act
         sut.Emulate8080Op(ref state);
 
         // Assert
         Assert.Equal(0x01, state.pc);
-        Assert.Equal(0x0708, state.b << 8 | state.c);
+
+        if (reg == "b")
+            Assert.Equal(0x0708, state.b << 8 | state.c);
+
+        if (reg == "d")
+            Assert.Equal(0x0809, state.d << 8 | state.e);
+
+        if (reg == "h")
+            Assert.Equal(0x090a, state.h << 8 | state.l);
+
+        if (reg == "sp")
+            Assert.Equal(0x0a0b, state.sp);
     }
 
     [Theory] // "b", "c", "d", "e", "h", "l", "a"
