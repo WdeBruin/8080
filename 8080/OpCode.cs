@@ -39,7 +39,6 @@ public class OpCode
                 {
                     byte res = (byte)(state.b + 1);
                     state.b = res;
-
                     state.cc.z = res == 0;
                     state.cc.s = (res & 0x80) != 0;
                     state.cc.p = (res % 2) == 0;
@@ -49,7 +48,6 @@ public class OpCode
                 {
                     byte res = (byte)(state.b - 1);
                     state.b = res;
-
                     state.cc.z = res == 0;
                     state.cc.s = (res & 0x80) != 0;
                     state.cc.p = (res % 2) == 0;
@@ -63,7 +61,6 @@ public class OpCode
                 {
                     bool hbit = (byte)((state.a >> 7) & 0xff) == 1;
                     state.a = (byte)((state.a << 1) | (hbit ? 1 : 0));
-
                     state.cc.cy = hbit;
                 }
                 break;
@@ -94,7 +91,6 @@ public class OpCode
                 {
                     byte res = (byte)(state.c + 1);
                     state.c = res;
-
                     state.cc.z = res == 0;
                     state.cc.s = (res & 0x80) != 0;
                     state.cc.p = (res % 2) == 0;
@@ -104,7 +100,6 @@ public class OpCode
                 {
                     byte res = (byte)(state.c - 1);
                     state.c = res;
-
                     state.cc.z = res == 0;
                     state.cc.s = (res & 0x80) != 0;
                     state.cc.p = (res % 2) == 0;
@@ -118,7 +113,6 @@ public class OpCode
                 {
                     bool lbit = (byte)(state.a & 0x01) == 1;
                     state.a = (byte)((lbit ? 0x80 : 0) | (state.a >> 1));
-
                     state.cc.cy = lbit;
                 }
                 break;
@@ -133,7 +127,6 @@ public class OpCode
                 {
                     byte res = (byte)(state.d + 1);
                     state.d = res;
-
                     state.cc.z = res == 0;
                     state.cc.s = (res & 0x80) != 0;
                     state.cc.p = (res % 2) == 0;
@@ -143,7 +136,6 @@ public class OpCode
                 {
                     byte res = (byte)(state.d - 1);
                     state.d = res;
-
                     state.cc.z = res == 0;
                     state.cc.s = (res & 0x80) != 0;
                     state.cc.p = (res % 2) == 0;
@@ -153,7 +145,13 @@ public class OpCode
                 opBytes = 2;
                 state.d = state.memory[state.pc + 1];
                 break;
-            case 0x17: UnimplementedInstruction(state); break;
+            case 0x17: // RAL
+                {
+                    bool hbit = (byte)((state.a >> 7) & 0xff) == 1;
+                    state.a = (byte)((state.a << 1) | (state.cc.cy ? 1 : 0));
+                    state.cc.cy = hbit;
+                }
+                break;
             case 0x19: UnimplementedInstruction(state); break;
             case 0x1A: UnimplementedInstruction(state); break;
             case 0x1B: UnimplementedInstruction(state); break;
@@ -161,7 +159,6 @@ public class OpCode
                 {
                     byte res = (byte)(state.e + 1);
                     state.e = res;
-
                     state.cc.z = res == 0;
                     state.cc.s = (res & 0x80) != 0;
                     state.cc.p = (res % 2) == 0;
@@ -171,7 +168,6 @@ public class OpCode
                 {
                     byte res = (byte)(state.e - 1);
                     state.e = res;
-
                     state.cc.z = res == 0;
                     state.cc.s = (res & 0x80) != 0;
                     state.cc.p = (res % 2) == 0;
@@ -193,7 +189,6 @@ public class OpCode
                 {
                     byte res = (byte)(state.h + 1);
                     state.h = res;
-
                     state.cc.z = res == 0;
                     state.cc.s = (res & 0x80) != 0;
                     state.cc.p = (res % 2) == 0;
@@ -203,7 +198,6 @@ public class OpCode
                 {
                     byte res = (byte)(state.h - 1);
                     state.h = res;
-
                     state.cc.z = res == 0;
                     state.cc.s = (res & 0x80) != 0;
                     state.cc.p = (res % 2) == 0;
@@ -213,7 +207,13 @@ public class OpCode
                 opBytes = 2;
                 state.h = state.memory[state.pc + 1];
                 break;
-            case 0x27: UnimplementedInstruction(state); break;
+            case 0x27: // RAR
+                {
+                    bool lbit = (byte)(state.a & 0x01) == 1;
+                    state.a = (byte)((state.cc.cy ? 0x80 : 0) | (state.a >> 1));
+                    state.cc.cy = lbit;
+                }
+                break;
             case 0x29: UnimplementedInstruction(state); break;
             case 0x2A: UnimplementedInstruction(state); break;
             case 0x2B: UnimplementedInstruction(state); break;
@@ -221,7 +221,6 @@ public class OpCode
                 {
                     byte res = (byte)(state.l + 1);
                     state.l = res;
-
                     state.cc.z = res == 0;
                     state.cc.s = (res & 0x80) != 0;
                     state.cc.p = (res % 2) == 0;
@@ -231,7 +230,6 @@ public class OpCode
                 {
                     byte res = (byte)(state.l - 1);
                     state.l = res;
-
                     state.cc.z = res == 0;
                     state.cc.s = (res & 0x80) != 0;
                     state.cc.p = (res % 2) == 0;
@@ -259,7 +257,6 @@ public class OpCode
                 {
                     byte res = (byte)(state.a + 1);
                     state.a = res;
-
                     state.cc.z = res == 0;
                     state.cc.s = (res & 0x80) != 0;
                     state.cc.p = (res % 2) == 0;
@@ -269,7 +266,6 @@ public class OpCode
                 {
                     byte res = (byte)(state.a - 1);
                     state.a = res;
-
                     state.cc.z = res == 0;
                     state.cc.s = (res & 0x80) != 0;
                     state.cc.p = (res % 2) == 0;
