@@ -1,5 +1,4 @@
 using cpu;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Utilities;
 
 namespace Tests;
 
@@ -22,8 +21,9 @@ public class OpCodeTests
         Assert.Equal(new State8080 { memory = mem, pc = 0x01 }, state);
     }
 
-    [Fact]
-    public void LxiB_should_load_correctly()
+    [Theory] // b, d, h, sp
+    [InlineData("b"), InlineData("d"), InlineData("h"), InlineData("sp")]
+    public void Lxi_should_load_correctly(string reg)
     {
         // Arrange
         State8080 state = new State8080
@@ -31,15 +31,57 @@ public class OpCodeTests
             memory = new byte[] { 0x01, 0x08, 0xF8 },
             pc = 0x00
         };
+
+        switch (reg)
+        {
+            case "b":
+                {
+                    state.memory[0] = 0x01;
+                    break;
+                }
+            case "d":
+                {
+                    state.memory[0] = 0x11;
+                    break;
+                }
+            case "h":
+                {
+                    state.memory[0] = 0x21;
+                    break;
+                }
+            case "sp":
+                {
+                    state.memory[0] = 0x31;
+                    break;
+                }
+        }
+
         OpCode sut = new();
 
         // Act
         sut.Emulate8080Op(ref state);
 
         // Assert
+        switch (reg)
+        {
+            case "b":
+                Assert.Equal(0xF8, state.b);
+                Assert.Equal(0x08, state.c);
+                break;
+            case "d":
+                Assert.Equal(0xF8, state.d);
+                Assert.Equal(0x08, state.e);
+                break;
+            case "h":
+                Assert.Equal(0xF8, state.h);
+                Assert.Equal(0x08, state.l);
+                break;
+            case "sp":
+                Assert.Equal(0xF8, state.sp >> 8);
+                Assert.Equal(0x08, (byte)state.sp);
+                break;
+        }
         Assert.Equal(0x03, state.pc);
-        Assert.Equal(0xF8, state.b);
-        Assert.Equal(0x08, state.c);
     }
 
     [Fact]

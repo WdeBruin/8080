@@ -122,7 +122,11 @@ public class OpCode
                     state.cc.cy = lbit;
                 }
                 break;
-            case 0x11: UnimplementedInstruction(state); break;
+            case 0x11: // LXI D 
+                opBytes = 3;
+                state.d = state.memory[state.pc + 2];
+                state.e = state.memory[state.pc + 1];
+                break;
             case 0x12: UnimplementedInstruction(state); break;
             case 0x13: UnimplementedInstruction(state); break;
             case 0x14: // INR D
@@ -178,7 +182,11 @@ public class OpCode
                 state.e = state.memory[state.pc + 1];
                 break;
             case 0x1F: UnimplementedInstruction(state); break;
-            case 0x21: UnimplementedInstruction(state); break;
+            case 0x21: // LIX H
+                opBytes = 3;
+                state.h = state.memory[state.pc + 2];
+                state.l = state.memory[state.pc + 1];
+                break;
             case 0x22: UnimplementedInstruction(state); break;
             case 0x23: UnimplementedInstruction(state); break;
             case 0x24: // INR H
@@ -234,7 +242,10 @@ public class OpCode
                 state.l = state.memory[state.pc + 1];
                 break;
             case 0x2F: UnimplementedInstruction(state); break;
-            case 0x31: UnimplementedInstruction(state); break;
+            case 0x31: // LIX SP
+                opBytes = 3;
+                state.sp = (ushort)((ushort)(state.memory[state.pc + 2] << 8) | state.memory[state.pc + 1]);
+                break;
             case 0x32: UnimplementedInstruction(state); break;
             case 0x33: UnimplementedInstruction(state); break;
             case 0x34: UnimplementedInstruction(state); break;
