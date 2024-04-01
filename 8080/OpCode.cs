@@ -7,6 +7,7 @@ public class OpCode
     void UnimplementedInstruction(State8080 state)
     {
         Console.WriteLine($"Error: Unimplemented instruction");
+        throw new Exception();
     }
 
     public void Emulate8080Op(ref State8080 state)
@@ -359,7 +360,9 @@ public class OpCode
             case 0x76: UnimplementedInstruction(state); break;
             case 0x77: // MOV M,A
                 {
-                    // store accumulator contents at memory location in hl ??
+                    // store accumulator contents at memory location hl
+                    ushort addr = (ushort)(state.h << 8 | state.l);
+                    state.memory[addr] = state.a;
                 }
                 break;
             case 0x78: UnimplementedInstruction(state); break;
@@ -436,7 +439,17 @@ public class OpCode
             case 0xBF: UnimplementedInstruction(state); break;
             case 0xC0: UnimplementedInstruction(state); break;
             case 0xC1: UnimplementedInstruction(state); break;
-            case 0xC2: UnimplementedInstruction(state); break;
+            case 0xC2:  // JNZ
+                if (state.cc.z == false)
+                {
+                    opBytes = 0;
+                    state.pc = (ushort)((ushort)(state.memory[state.pc + 2] << 8) | state.memory[state.pc + 1]);
+                }
+                else 
+                {
+                    opBytes = 3;
+                }
+                break;
             case 0xC3: // JMP
                 opBytes = 0; // don't increase
                 state.pc = (ushort)((ushort)(state.memory[state.pc + 2] << 8) | state.memory[state.pc + 1]);
@@ -451,7 +464,9 @@ public class OpCode
             case 0xCC: UnimplementedInstruction(state); break;
             case 0xCD:  // CALL
                 opBytes = 0; // don't increase
-                state.sp = (ushort)(state.pc + 2);
+                state.memory[state.sp-1] = (byte)(state.pc >> 8);
+                state.memory[state.sp-2] = (byte)state.pc;
+                state.sp -= 2;
                 state.pc = (ushort)((ushort)(state.memory[state.pc + 2] << 8) | state.memory[state.pc + 1]);
                 break;
             case 0xCE: UnimplementedInstruction(state); break;
