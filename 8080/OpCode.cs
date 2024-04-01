@@ -405,7 +405,7 @@ public class OpCode
                 break;
             case 0x7D: UnimplementedInstruction(state); break;
             case 0x7E: // MOV A,M
-                state.a = (byte)((ushort)(state.memory[state.h] << 8) | state.memory[state.l]);
+                state.a = state.memory[state.h << 8 | state.l];
                 break;
             case 0x7F: UnimplementedInstruction(state); break;
             case 0x80: UnimplementedInstruction(state); break;
