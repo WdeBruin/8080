@@ -1,3 +1,3 @@
 ﻿using cpu;
 
-new Disassembler().Run();
+new SpaceInvader().Run();

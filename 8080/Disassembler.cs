@@ -1,26 +1,16 @@
-﻿namespace cpu;
+﻿using System.Security.Cryptography.X509Certificates;
+
+namespace cpu;
 
 public class Disassembler
 {
-    byte[] rom = File.ReadAllBytes("invaders");
-    int pc = 0;
-
-    public void Run()
-    {
-        while (pc < rom.Length)
-        {
-            int n = Disassemble8080Op(rom, pc);
-            pc += n;
-        }
-    }
-
-    private /*    
+     /*    
     *codebuffer is a valid pointer to 8080 assembly code    
     pc is the current offset into the code    
 
     returns the number of bytes of the op    
    */
-int Disassemble8080Op(byte[] codeBuffer, int pc)
+public int Disassemble8080OpInstruction(byte[] codeBuffer, int pc)
     {
         int opBytes = 1;
 

@@ -1,9 +1,9 @@
-using System.Runtime.Intrinsics.X86;
-
 namespace cpu;
 
 public class OpCode
 {
+    private readonly Disassembler disassembler = new();
+
     void UnimplementedInstruction(State8080 state)
     {
         Console.WriteLine($"Error: Unimplemented instruction");
@@ -13,6 +13,8 @@ public class OpCode
     {
         byte opCode = state.memory[state.pc];
         ushort opBytes = 1;
+
+        disassembler.Disassemble8080OpInstruction(state.memory, state.pc);
 
         switch (opCode)
         {
