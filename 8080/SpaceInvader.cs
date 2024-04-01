@@ -15,9 +15,9 @@ public class SpaceInvader
         var cpuEmu = new OpCode();
 
         int step = 0;
-        while (true)
+        while (true && step <= 50000)
         {
-            Console.WriteLine($"#{step} -- PC {AsHex(state.pc)} -- SP {AsHex(state.sp)} -- AC {state.cc.ac} -- PAD {state.cc.pad} -- CY {state.cc.cy} -- P {state.cc.p} -- S {state.cc.s}");
+            Console.WriteLine($"#{step} -- PC {AsHex(state.pc)} -- SP {AsHex(state.sp)} -- Flags {(state.cc.z ? "Z":".")}{(state.cc.ac ? "AC":".")}{(state.cc.pad ? "PAD":".")}{(state.cc.cy ? "CY":".")}{(state.cc.p ? "P":".")}{(state.cc.s ? "S":".")}");
             Console.WriteLine($"A {AsHex(state.a)} -- BC {AsHex(state.b)}{AsHex(state.c)} -- DE {AsHex(state.d)}{AsHex(state.e)} -- HL {AsHex(state.h)}{AsHex(state.l)}");
 
             cpuEmu.Emulate8080Op(ref state);
