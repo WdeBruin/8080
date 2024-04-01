@@ -166,7 +166,16 @@ public class OpCode
                     state.cc.cy = hbit;
                 }
                 break;
-            case 0x19: UnimplementedInstruction(state); break;
+            case 0x19: // DAD D
+                {
+                    ushort toAdd = (ushort)(state.d << 8 | state.e);
+                    ushort hl = (ushort)(state.h << 8 | state.l);
+                    int res = toAdd + hl;
+                    state.cc.cy = (res & 0x1_0000) > 0; // set carry if bit 17 is set (overflow)
+                    state.h = (byte)(res >> 8);
+                    state.l = (byte)res;
+                }
+                break;
             case 0x1A: // LDAX D
                 {
                     ushort addr = (ushort)(state.d << 8 | state.e);
@@ -239,7 +248,16 @@ public class OpCode
                     state.cc.cy = lbit;
                 }
                 break;
-            case 0x29: UnimplementedInstruction(state); break;
+            case 0x29: // DAD H
+                {
+                    ushort toAdd = (ushort)(state.h << 8 | state.l);
+                    ushort hl = (ushort)(state.h << 8 | state.l);
+                    int res = toAdd + hl;
+                    state.cc.cy = (res & 0x1_0000) > 0; // set carry if bit 17 is set (overflow)
+                    state.h = (byte)(res >> 8);
+                    state.l = (byte)res;
+                }
+                break;
             case 0x2A: UnimplementedInstruction(state); break;
             case 0x2B: UnimplementedInstruction(state); break;
             case 0x2C: // INR L
@@ -277,7 +295,7 @@ public class OpCode
             case 0x35: UnimplementedInstruction(state); break;
             case 0x36: // MVI M
                 opBytes = 2;
-                state.l += state.memory[state.pc + 1];
+                state.memory[state.h << 8 | state.l] = state.memory[state.pc+1];
                 break;
             case 0x37: UnimplementedInstruction(state); break;
             case 0x39: UnimplementedInstruction(state); break;
@@ -328,7 +346,9 @@ public class OpCode
             case 0x53: UnimplementedInstruction(state); break;
             case 0x54: UnimplementedInstruction(state); break;
             case 0x55: UnimplementedInstruction(state); break;
-            case 0x56: UnimplementedInstruction(state); break;
+            case 0x56: // MOV D,M
+                state.d = (byte)((ushort)(state.memory[state.h] << 8) | state.memory[state.l]);
+                break;
             case 0x57: UnimplementedInstruction(state); break;
             case 0x58: UnimplementedInstruction(state); break;
             case 0x59: UnimplementedInstruction(state); break;
@@ -336,7 +356,9 @@ public class OpCode
             case 0x5B: UnimplementedInstruction(state); break;
             case 0x5C: UnimplementedInstruction(state); break;
             case 0x5D: UnimplementedInstruction(state); break;
-            case 0x5E: UnimplementedInstruction(state); break;
+            case 0x5E: // MOV E,M
+                state.e = (byte)((ushort)(state.memory[state.h] << 8) | state.memory[state.l]);
+                break;
             case 0x5F: UnimplementedInstruction(state); break;
             case 0x60: UnimplementedInstruction(state); break;
             case 0x61: UnimplementedInstruction(state); break;
@@ -344,7 +366,9 @@ public class OpCode
             case 0x63: UnimplementedInstruction(state); break;
             case 0x64: UnimplementedInstruction(state); break;
             case 0x65: UnimplementedInstruction(state); break;
-            case 0x66: UnimplementedInstruction(state); break;
+            case 0x66: // MOV H,M
+                state.h = (byte)((ushort)(state.memory[state.h] << 8) | state.memory[state.l]);
+                break;
             case 0x67: UnimplementedInstruction(state); break;
             case 0x68: UnimplementedInstruction(state); break;
             case 0x69: UnimplementedInstruction(state); break;
@@ -353,7 +377,9 @@ public class OpCode
             case 0x6C: UnimplementedInstruction(state); break;
             case 0x6D: UnimplementedInstruction(state); break;
             case 0x6E: UnimplementedInstruction(state); break;
-            case 0x6F: UnimplementedInstruction(state); break;
+            case 0x6F: // MOV L,A
+                state.l = state.a; 
+                break;
             case 0x70: UnimplementedInstruction(state); break;
             case 0x71: UnimplementedInstruction(state); break;
             case 0x72: UnimplementedInstruction(state); break;
@@ -370,13 +396,17 @@ public class OpCode
                 break;
             case 0x78: UnimplementedInstruction(state); break;
             case 0x79: UnimplementedInstruction(state); break;
-            case 0x7A: UnimplementedInstruction(state); break;
+            case 0x7A: // MOV A,D
+                state.a = state.d; 
+                break;
             case 0x7B: UnimplementedInstruction(state); break;
             case 0x7C: // MOV A,H
                 state.a = state.h; 
                 break;
             case 0x7D: UnimplementedInstruction(state); break;
-            case 0x7E: UnimplementedInstruction(state); break;
+            case 0x7E: // MOV A,M
+                state.a = (byte)((ushort)(state.memory[state.h] << 8) | state.memory[state.l]);
+                break;
             case 0x7F: UnimplementedInstruction(state); break;
             case 0x80: UnimplementedInstruction(state); break;
             case 0x81: UnimplementedInstruction(state); break;
@@ -443,7 +473,13 @@ public class OpCode
             case 0xBE: UnimplementedInstruction(state); break;
             case 0xBF: UnimplementedInstruction(state); break;
             case 0xC0: UnimplementedInstruction(state); break;
-            case 0xC1: UnimplementedInstruction(state); break;
+            case 0xC1: // POP B
+                {
+                    state.c = state.memory[state.sp];
+                    state.b = state.memory[state.sp+1];
+                    state.sp +=2;
+                }
+                break;
             case 0xC2:  // JNZ
                 if (state.cc.z == false)
                 {
@@ -460,7 +496,13 @@ public class OpCode
                 state.pc = (ushort)((ushort)(state.memory[state.pc + 2] << 8) | state.memory[state.pc + 1]);
                 break;
             case 0xC4: UnimplementedInstruction(state); break;
-            case 0xC5: UnimplementedInstruction(state); break;
+            case 0xC5: // PUSH B
+                {
+                    state.memory[state.sp-1] = state.b;
+                    state.memory[state.sp-2] = state.c;
+                    state.sp -= 2;
+                }
+                break;
             case 0xC6: UnimplementedInstruction(state); break;
             case 0xC7: UnimplementedInstruction(state); break;
             case 0xC8: UnimplementedInstruction(state); break;
@@ -486,11 +528,29 @@ public class OpCode
             case 0xCE: UnimplementedInstruction(state); break;
             case 0xCF: UnimplementedInstruction(state); break;
             case 0xD0: UnimplementedInstruction(state); break;
-            case 0xD1: UnimplementedInstruction(state); break;
+            case 0xD1: // POP D
+                {
+                    state.e = state.memory[state.sp];
+                    state.d = state.memory[state.sp+1];
+                    state.sp +=2;
+                }
+                break;
             case 0xD2: UnimplementedInstruction(state); break;
-            case 0xD3: UnimplementedInstruction(state); break;
+            case 0xD3: // OUT D8
+                {
+                    opBytes = 2;
+                    // Contents of accumulator sent to output device D8
+                    // TODO ?
+                }
+                break;
             case 0xD4: UnimplementedInstruction(state); break;
-            case 0xD5: UnimplementedInstruction(state); break;
+            case 0xD5: // PUSH D
+                {
+                    state.memory[state.sp-1] = state.d;
+                    state.memory[state.sp-2] = state.e;
+                    state.sp -= 2;
+                }
+                break;
             case 0xD6: UnimplementedInstruction(state); break;
             case 0xD7: UnimplementedInstruction(state); break;
             case 0xD8: UnimplementedInstruction(state); break;
@@ -500,17 +560,38 @@ public class OpCode
             case 0xDE: UnimplementedInstruction(state); break;
             case 0xDF: UnimplementedInstruction(state); break;
             case 0xE0: UnimplementedInstruction(state); break;
-            case 0xE1: UnimplementedInstruction(state); break;
+            case 0xE1: // POP H
+                {
+                    state.l = state.memory[state.sp];
+                    state.h = state.memory[state.sp+1];
+                    state.sp +=2;
+                }
+                break;
             case 0xE2: UnimplementedInstruction(state); break;
             case 0xE3: UnimplementedInstruction(state); break;
             case 0xE4: UnimplementedInstruction(state); break;
-            case 0xE5: UnimplementedInstruction(state); break;
+            case 0xE5: // PUSH H
+                {
+                    state.memory[state.sp-1] = state.h;
+                    state.memory[state.sp-2] = state.l;
+                    state.sp -= 2;
+                }
+                break;
             case 0xE6: UnimplementedInstruction(state); break;
             case 0xE7: UnimplementedInstruction(state); break;
             case 0xE8: UnimplementedInstruction(state); break;
             case 0xE9: UnimplementedInstruction(state); break;
             case 0xEA: UnimplementedInstruction(state); break;
-            case 0xEB: UnimplementedInstruction(state); break;
+            case 0xEB: // XCHG
+                {
+                    var tempD = state.d;
+                    var tempE = state.e;
+                    state.d = state.h;
+                    state.e = state.l;
+                    state.h = tempD;
+                    state.l = tempE;   
+                }
+                break;
             case 0xEC: UnimplementedInstruction(state); break;
             case 0xEE: UnimplementedInstruction(state); break;
             case 0xEF: UnimplementedInstruction(state); break;
