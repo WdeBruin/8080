@@ -347,7 +347,10 @@ public class OpCode
             case 0x54: UnimplementedInstruction(state); break;
             case 0x55: UnimplementedInstruction(state); break;
             case 0x56: // MOV D,M
-                state.d = (byte)((ushort)(state.memory[state.h] << 8) | state.memory[state.l]);
+                {
+                    ushort addr = (ushort)(state.h << 8 | state.l);
+                    state.d = state.memory[addr];
+                }
                 break;
             case 0x57: UnimplementedInstruction(state); break;
             case 0x58: UnimplementedInstruction(state); break;
@@ -357,7 +360,10 @@ public class OpCode
             case 0x5C: UnimplementedInstruction(state); break;
             case 0x5D: UnimplementedInstruction(state); break;
             case 0x5E: // MOV E,M
-                state.e = (byte)((ushort)(state.memory[state.h] << 8) | state.memory[state.l]);
+                {
+                    ushort addr = (ushort)(state.h << 8 | state.l);
+                    state.e = state.memory[addr];
+                }
                 break;
             case 0x5F: UnimplementedInstruction(state); break;
             case 0x60: UnimplementedInstruction(state); break;
@@ -367,7 +373,10 @@ public class OpCode
             case 0x64: UnimplementedInstruction(state); break;
             case 0x65: UnimplementedInstruction(state); break;
             case 0x66: // MOV H,M
-                state.h = (byte)((ushort)(state.memory[state.h] << 8) | state.memory[state.l]);
+                {
+                    ushort addr = (ushort)(state.h << 8 | state.l);
+                    state.h = state.memory[addr];
+                }
                 break;
             case 0x67: UnimplementedInstruction(state); break;
             case 0x68: UnimplementedInstruction(state); break;
@@ -405,7 +414,10 @@ public class OpCode
                 break;
             case 0x7D: UnimplementedInstruction(state); break;
             case 0x7E: // MOV A,M
-                state.a = state.memory[state.h << 8 | state.l];
+                {
+                    ushort addr = (ushort)(state.h << 8 | state.l);
+                    state.a = state.memory[addr];
+                }
                 break;
             case 0x7F: UnimplementedInstruction(state); break;
             case 0x80: UnimplementedInstruction(state); break;
