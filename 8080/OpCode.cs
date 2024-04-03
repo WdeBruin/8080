@@ -1,3 +1,5 @@
+using System.Collections;
+
 namespace cpu;
 
 public class OpCode
@@ -515,7 +517,27 @@ public class OpCode
                     state.sp -= 2;
                 }
                 break;
-            case 0xC6: UnimplementedInstruction(state); break;
+            case 0xC6: // ADI
+                {
+                    opBytes = 2;
+                    byte val = state.a;
+                    byte toAdd = state.memory[state.pc+1];
+
+                    int res = val + toAdd;
+
+                    state.cc.z = res == 0;
+                    state.cc.p = (res % 2) == 0;
+                    state.cc.s = (res & 0x80) != 0;
+                    state.cc.cy = (res & 0x1_0000) > 0; // set carry if bit 17 is set (overflow)
+
+                    // ac is logical or of bit 3 of val and toadd.
+                    bool b3Val = (val & 0x04) != 0;
+                    bool b3Add = (toAdd & 0x04) != 0;
+                    state.cc.ac = b3Val | b3Add;
+
+                    state.a = (byte)res;
+                }
+                break;
             case 0xC7: UnimplementedInstruction(state); break;
             case 0xC8: UnimplementedInstruction(state); break;
             case 0xC9: // RET
@@ -589,7 +611,25 @@ public class OpCode
                     state.sp -= 2;
                 }
                 break;
-            case 0xE6: UnimplementedInstruction(state); break;
+            case 0xE6: // ANI
+                {
+                    opBytes = 2;
+
+                    var data = state.memory[state.pc+1];
+
+                    // clear those
+                    state.cc.cy = false;
+                    state.cc.ac = false;
+
+                    int res = state.a & data;                    
+
+                    state.cc.z = res == 0;
+                    state.cc.p = (res % 2) == 0;
+                    state.cc.s = (res & 0x80) != 0;
+
+                    state.a = (byte)res;
+                }
+                break;
             case 0xE7: UnimplementedInstruction(state); break;
             case 0xE8: UnimplementedInstruction(state); break;
             case 0xE9: UnimplementedInstruction(state); break;
@@ -612,7 +652,28 @@ public class OpCode
             case 0xF2: UnimplementedInstruction(state); break;
             case 0xF3: UnimplementedInstruction(state); break;
             case 0xF4: UnimplementedInstruction(state); break;
-            case 0xF5: UnimplementedInstruction(state); break;
+            case 0xF5: // PUSH PSW
+                {
+                    state.memory[state.sp-1] = state.a;
+
+                    BitArray flags = new BitArray(8);
+                    flags[0] = state.cc.cy;
+                    flags[1] = true;
+                    flags[2] = state.cc.p;
+                    flags[3] = false;
+                    flags[4] = state.cc.ac;
+                    flags[5] = false;
+                    flags[6] = state.cc.z;
+                    flags[7] = state.cc.s;
+                    
+                    byte[] bytes = new byte[1];
+                    flags.CopyTo(bytes, 0);
+
+                    state.memory[state.sp-2] = bytes[0];
+                    
+                    state.sp -= 2;      
+                }
+            break;
             case 0xF6: UnimplementedInstruction(state); break;
             case 0xF7: UnimplementedInstruction(state); break;
             case 0xF8: UnimplementedInstruction(state); break;
