@@ -531,8 +531,8 @@ public class OpCode
                     state.cc.cy = (res & 0x1_0000) > 0; // set carry if bit 17 is set (overflow)
 
                     // ac is logical or of bit 3 of val and toadd.
-                    bool b3Val = (val & 0x04) != 0;
-                    bool b3Add = (toAdd & 0x04) != 0;
+                    bool b3Val = (val & 0x08) != 0;
+                    bool b3Add = (toAdd & 0x08) != 0;
                     state.cc.ac = b3Val | b3Add;
 
                     state.a = (byte)res;
