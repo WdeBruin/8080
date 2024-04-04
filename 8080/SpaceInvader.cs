@@ -48,6 +48,9 @@ public class SpaceInvader
 
                     // Now draw the screen
                     await DrawScreen(state.memory[0x2400..0x3fff]);
+
+                    // Disable interrupt
+                    DisableInterrupt(ref state, 2);
                 }
             }
 
@@ -69,6 +72,13 @@ public class SpaceInvader
 
         //set pc to low mem vector (0x10 for interruptNum 2 at end of screen, don't need middle screen interruptnum 1 at 0x08)
         state.pc = (ushort)(8 * interruptNum);
+    }
+
+    private void DisableInterrupt(ref State8080 state, int interruptNum)
+    {
+        // Pop pc from stack -> goes wrong, missing value. Got 243 but not 2560 at sp+1
+        state.pc = (ushort)(state.memory[state.sp] + state.memory[state.sp+1]);
+        state.sp += 2;
     }
 
     private async Task DrawScreen(byte[] vram)
