@@ -297,7 +297,7 @@ public class OpCode
             case 0x35: UnimplementedInstruction(state); break;
             case 0x36: // MVI M
                 opBytes = 2;
-                state.memory[state.h << 8 | state.l] = state.memory[state.pc+1];
+                state.memory[state.h << 8 | state.l] = state.memory[state.pc + 1];
                 break;
             case 0x37: UnimplementedInstruction(state); break;
             case 0x39: UnimplementedInstruction(state); break;
@@ -389,7 +389,7 @@ public class OpCode
             case 0x6D: UnimplementedInstruction(state); break;
             case 0x6E: UnimplementedInstruction(state); break;
             case 0x6F: // MOV L,A
-                state.l = state.a; 
+                state.l = state.a;
                 break;
             case 0x70: UnimplementedInstruction(state); break;
             case 0x71: UnimplementedInstruction(state); break;
@@ -408,11 +408,11 @@ public class OpCode
             case 0x78: UnimplementedInstruction(state); break;
             case 0x79: UnimplementedInstruction(state); break;
             case 0x7A: // MOV A,D
-                state.a = state.d; 
+                state.a = state.d;
                 break;
             case 0x7B: UnimplementedInstruction(state); break;
             case 0x7C: // MOV A,H
-                state.a = state.h; 
+                state.a = state.h;
                 break;
             case 0x7D: UnimplementedInstruction(state); break;
             case 0x7E: // MOV A,M
@@ -490,8 +490,8 @@ public class OpCode
             case 0xC1: // POP B
                 {
                     state.c = state.memory[state.sp];
-                    state.b = state.memory[state.sp+1];
-                    state.sp +=2;
+                    state.b = state.memory[state.sp + 1];
+                    state.sp += 2;
                 }
                 break;
             case 0xC2:  // JNZ
@@ -500,7 +500,7 @@ public class OpCode
                     opBytes = 0;
                     state.pc = (ushort)((ushort)(state.memory[state.pc + 2] << 8) | state.memory[state.pc + 1]);
                 }
-                else 
+                else
                 {
                     opBytes = 3;
                 }
@@ -512,8 +512,8 @@ public class OpCode
             case 0xC4: UnimplementedInstruction(state); break;
             case 0xC5: // PUSH B
                 {
-                    state.memory[state.sp-1] = state.b;
-                    state.memory[state.sp-2] = state.c;
+                    state.memory[state.sp - 1] = state.b;
+                    state.memory[state.sp - 2] = state.c;
                     state.sp -= 2;
                 }
                 break;
@@ -521,7 +521,7 @@ public class OpCode
                 {
                     opBytes = 2;
                     byte val = state.a;
-                    byte toAdd = state.memory[state.pc+1];
+                    byte toAdd = state.memory[state.pc + 1];
 
                     int res = val + toAdd;
 
@@ -542,7 +542,7 @@ public class OpCode
             case 0xC8: UnimplementedInstruction(state); break;
             case 0xC9: // RET
                 {
-                    var addr = (ushort)((ushort)(state.memory[state.sp+1] << 8) | state.memory[state.sp]);
+                    var addr = (ushort)((ushort)(state.memory[state.sp + 1] << 8) | state.memory[state.sp]);
                     state.pc = addr;
                     state.sp += 2;
                 }
@@ -552,9 +552,9 @@ public class OpCode
             case 0xCD:  // CALL
                 {
                     opBytes = 0; // don't increase
-                    var addr = state.pc+2; // return addr
-                    state.memory[state.sp-1] = (byte)(addr >> 8);
-                    state.memory[state.sp-2] = (byte)addr;
+                    var addr = state.pc + 2; // return addr
+                    state.memory[state.sp - 1] = (byte)(addr >> 8);
+                    state.memory[state.sp - 2] = (byte)addr;
                     state.sp -= 2;
                     state.pc = (ushort)((ushort)(state.memory[state.pc + 2] << 8) | state.memory[state.pc + 1]);
                 }
@@ -565,8 +565,8 @@ public class OpCode
             case 0xD1: // POP D
                 {
                     state.e = state.memory[state.sp];
-                    state.d = state.memory[state.sp+1];
-                    state.sp +=2;
+                    state.d = state.memory[state.sp + 1];
+                    state.sp += 2;
                 }
                 break;
             case 0xD2: UnimplementedInstruction(state); break;
@@ -580,8 +580,8 @@ public class OpCode
             case 0xD4: UnimplementedInstruction(state); break;
             case 0xD5: // PUSH D
                 {
-                    state.memory[state.sp-1] = state.d;
-                    state.memory[state.sp-2] = state.e;
+                    state.memory[state.sp - 1] = state.d;
+                    state.memory[state.sp - 2] = state.e;
                     state.sp -= 2;
                 }
                 break;
@@ -597,8 +597,8 @@ public class OpCode
             case 0xE1: // POP H
                 {
                     state.l = state.memory[state.sp];
-                    state.h = state.memory[state.sp+1];
-                    state.sp +=2;
+                    state.h = state.memory[state.sp + 1];
+                    state.sp += 2;
                 }
                 break;
             case 0xE2: UnimplementedInstruction(state); break;
@@ -606,8 +606,8 @@ public class OpCode
             case 0xE4: UnimplementedInstruction(state); break;
             case 0xE5: // PUSH H
                 {
-                    state.memory[state.sp-1] = state.h;
-                    state.memory[state.sp-2] = state.l;
+                    state.memory[state.sp - 1] = state.h;
+                    state.memory[state.sp - 2] = state.l;
                     state.sp -= 2;
                 }
                 break;
@@ -615,13 +615,13 @@ public class OpCode
                 {
                     opBytes = 2;
 
-                    var data = state.memory[state.pc+1];
+                    var data = state.memory[state.pc + 1];
 
                     // clear those
                     state.cc.cy = false;
                     state.cc.ac = false;
 
-                    int res = state.a & data;                    
+                    int res = state.a & data;
 
                     state.cc.z = res == 0;
                     state.cc.p = (res % 2) == 0;
@@ -641,20 +641,35 @@ public class OpCode
                     state.d = state.h;
                     state.e = state.l;
                     state.h = tempD;
-                    state.l = tempE;   
+                    state.l = tempE;
                 }
                 break;
             case 0xEC: UnimplementedInstruction(state); break;
             case 0xEE: UnimplementedInstruction(state); break;
             case 0xEF: UnimplementedInstruction(state); break;
             case 0xF0: UnimplementedInstruction(state); break;
-            case 0xF1: UnimplementedInstruction(state); break;
+            case 0xF1: // POP PSW
+                {
+                    byte flags = state.memory[state.sp];
+
+                    BitArray f = new BitArray(new byte[1] { flags });
+                    state.cc.cy = f[0];
+                    state.cc.p = f[2];
+                    state.cc.ac = f[4];
+                    state.cc.z = f[6];
+                    state.cc.s = f[7];
+
+                    state.a = state.memory[state.sp + 1];
+
+                    state.sp += 2;
+                }
+                break;
             case 0xF2: UnimplementedInstruction(state); break;
             case 0xF3: UnimplementedInstruction(state); break;
             case 0xF4: UnimplementedInstruction(state); break;
             case 0xF5: // PUSH PSW
                 {
-                    state.memory[state.sp-1] = state.a;
+                    state.memory[state.sp - 1] = state.a;
 
                     BitArray flags = new BitArray(8);
                     flags[0] = state.cc.cy;
@@ -665,15 +680,15 @@ public class OpCode
                     flags[5] = false;
                     flags[6] = state.cc.z;
                     flags[7] = state.cc.s;
-                    
+
                     byte[] bytes = new byte[1];
                     flags.CopyTo(bytes, 0);
 
-                    state.memory[state.sp-2] = bytes[0];
-                    
-                    state.sp -= 2;      
+                    state.memory[state.sp - 2] = bytes[0];
+
+                    state.sp -= 2;
                 }
-            break;
+                break;
             case 0xF6: UnimplementedInstruction(state); break;
             case 0xF7: UnimplementedInstruction(state); break;
             case 0xF8: UnimplementedInstruction(state); break;
@@ -684,7 +699,7 @@ public class OpCode
             case 0xFE: // CPI
                 {
                     opBytes = 2;
-                    var data = state.memory[state.pc+1];
+                    var data = state.memory[state.pc + 1];
                     state.cc.z = data == state.a;
                     state.cc.cy = data > state.a;
 
