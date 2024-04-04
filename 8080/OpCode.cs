@@ -289,7 +289,13 @@ public class OpCode
                 opBytes = 3;
                 state.sp = (ushort)((ushort)(state.memory[state.pc + 2] << 8) | state.memory[state.pc + 1]);
                 break;
-            case 0x32: UnimplementedInstruction(state); break;
+            case 0x32: // STA adr
+                {
+                    opBytes = 3;
+                    ushort addr = (ushort)(state.memory[state.pc + 2] << 8 | state.memory[state.pc + 1]);
+                    state.memory[addr] = state.a;
+                }
+                break;
             case 0x33: // INX SP
                 state.sp++;
                 break;
@@ -301,7 +307,13 @@ public class OpCode
                 break;
             case 0x37: UnimplementedInstruction(state); break;
             case 0x39: UnimplementedInstruction(state); break;
-            case 0x3A: UnimplementedInstruction(state); break;
+            case 0x3A: // LDA adr
+                {
+                    opBytes = 3;
+                    ushort addr = (ushort)(state.memory[state.pc + 2] << 8 | state.memory[state.pc + 1]);
+                    state.a = state.memory[addr];
+                }
+                break;
             case 0x3B: UnimplementedInstruction(state); break;
             case 0x3C: // INR A
                 {
@@ -405,12 +417,16 @@ public class OpCode
                     state.memory[addr] = state.a;
                 }
                 break;
-            case 0x78: UnimplementedInstruction(state); break;
+            case 0x78: // MOV A,B 
+                state.a = state.b;
+                break;
             case 0x79: UnimplementedInstruction(state); break;
             case 0x7A: // MOV A,D
                 state.a = state.d;
                 break;
-            case 0x7B: UnimplementedInstruction(state); break;
+            case 0x7B:  // MOV A,E
+                state.a = state.e;
+                break;
             case 0x7C: // MOV A,H
                 state.a = state.h;
                 break;
@@ -461,7 +477,22 @@ public class OpCode
             case 0xA4: UnimplementedInstruction(state); break;
             case 0xA5: UnimplementedInstruction(state); break;
             case 0xA6: UnimplementedInstruction(state); break;
-            case 0xA7: UnimplementedInstruction(state); break;
+            case 0xA7: // ANA A
+                {
+                    int res = state.a & state.a;
+
+                    state.cc.z = res == 0;
+                    state.cc.p = (res % 2) == 0;
+                    state.cc.s = (res & 0x80) != 0;
+                    state.cc.cy = (res & 0x1_0000) > 0;
+
+                    bool a = (state.a & 0x04) != 0;
+                    bool b = (state.a & 0x04) != 0;
+                    state.cc.ac = a | b;
+
+                    state.a = (byte)res;
+                }
+                break;
             case 0xA8: UnimplementedInstruction(state); break;
             case 0xA9: UnimplementedInstruction(state); break;
             case 0xAA: UnimplementedInstruction(state); break;
@@ -469,7 +500,22 @@ public class OpCode
             case 0xAC: UnimplementedInstruction(state); break;
             case 0xAD: UnimplementedInstruction(state); break;
             case 0xAE: UnimplementedInstruction(state); break;
-            case 0xAF: UnimplementedInstruction(state); break;
+            case 0xAF: // XRA
+                {
+                    int res = (byte)(state.a ^ state.a);
+
+                    state.cc.z = res == 0;
+                    state.cc.p = (res % 2) == 0;
+                    state.cc.s = (res & 0x80) != 0;
+                    state.cc.cy = (res & 0x1_0000) > 0;
+
+                    bool a = (state.a & 0x04) != 0;
+                    bool b = (state.a & 0x04) != 0;
+                    state.cc.ac = a | b;
+
+                    state.a = (byte)res;
+                }
+                break;
             case 0xB0: UnimplementedInstruction(state); break;
             case 0xB1: UnimplementedInstruction(state); break;
             case 0xB2: UnimplementedInstruction(state); break;
@@ -694,7 +740,11 @@ public class OpCode
             case 0xF8: UnimplementedInstruction(state); break;
             case 0xF9: UnimplementedInstruction(state); break;
             case 0xFA: UnimplementedInstruction(state); break;
-            case 0xFB: UnimplementedInstruction(state); break;
+            case 0xFB: // EI
+                {
+                    // todo enable interrupt                
+                }
+                break;
             case 0xFC: UnimplementedInstruction(state); break;
             case 0xFE: // CPI
                 {
