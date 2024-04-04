@@ -1,50 +1,61 @@
 ﻿using System.Diagnostics;
+using SFML.Graphics;
+using SFML.Window;
 
 namespace cpu;
 
 public class SpaceInvader
 {
+    RenderWindow window;
+
+    public SpaceInvader()
+    {
+        window = new RenderWindow(new VideoMode(256, 224), "display");
+    }
+
     public void Run()
     {
-        var state = new State8080
-        {
-            memory = new byte[0x4000] //16k (0000 - 1FFF ROM; 2000 - 23FF RAM; 2400 - 3FFF VRAM)
-        };
+        DrawScreen();
+        Thread.Sleep(10_000);
+        // var state = new State8080
+        // {
+        //     memory = new byte[0x4000] //16k (0000 - 1FFF ROM; 2000 - 23FF RAM; 2400 - 3FFF VRAM)
+        // };
 
-        var rom = File.ReadAllBytes("invaders");
-        rom.CopyTo(state.memory, 0); // load the rom
+        // var rom = File.ReadAllBytes("invaders");
+        // rom.CopyTo(state.memory, 0); // load the rom
 
-        var cpuEmu = new OpCode();
+        // var cpuEmu = new OpCode();
 
-        int step = 0;
+        // int step = 0;
 
-        Stopwatch s = new Stopwatch();
-        s.Start();
-        long lastInterrupt = 0;
+        // Stopwatch s = new Stopwatch();
+        // s.Start();
+        // long lastInterrupt = 0;
 
-        bool done = false;
-        while (done != true)
-        {
-            Console.WriteLine($"#{step} -- PC {AsHex(state.pc)} -- SP {AsHex(state.sp)} -- Flags {(state.cc.z ? "Z" : ".")}{(state.cc.ac ? "AC" : ".")}{(state.cc.pad ? "PAD" : ".")}{(state.cc.cy ? "CY" : ".")}{(state.cc.p ? "P" : ".")}{(state.cc.s ? "S" : ".")}");
-            Console.WriteLine($"A {AsHex(state.a)} -- BC {AsHex(state.b)}{AsHex(state.c)} -- DE {AsHex(state.d)}{AsHex(state.e)} -- HL {AsHex(state.h)}{AsHex(state.l)} -- {(state.int_enable ? "INT" : ".")}");
-            Console.WriteLine();
+        // bool done = false;
+        // while (done != true)
+        // {
+        //     Console.WriteLine($"#{step} -- PC {AsHex(state.pc)} -- SP {AsHex(state.sp)} -- Flags {(state.cc.z ? "Z" : ".")}{(state.cc.ac ? "AC" : ".")}{(state.cc.pad ? "PAD" : ".")}{(state.cc.cy ? "CY" : ".")}{(state.cc.p ? "P" : ".")}{(state.cc.s ? "S" : ".")}");
+        //     Console.WriteLine($"A {AsHex(state.a)} -- BC {AsHex(state.b)}{AsHex(state.c)} -- DE {AsHex(state.d)}{AsHex(state.e)} -- HL {AsHex(state.h)}{AsHex(state.l)} -- {(state.int_enable ? "INT" : ".")}");
+        //     Console.WriteLine();
 
-            cpuEmu.Emulate8080Op(ref state);
+        //     cpuEmu.Emulate8080Op(ref state);
 
-            if (s.ElapsedMilliseconds - lastInterrupt > 1.0 / 60.0)
-            {
-                if (state.int_enable)
-                {
-                    GenerateInterrupt(ref state, 2);
-                    lastInterrupt = s.ElapsedMilliseconds;
+        //     if (s.ElapsedMilliseconds - lastInterrupt > 1.0 / 60.0)
+        //     {
+        //         if (state.int_enable)
+        //         {
+        //             GenerateInterrupt(ref state, 2);
+        //             lastInterrupt = s.ElapsedMilliseconds;
 
-                    // Now draw the screen
-                    DrawScreen(state.memory[0x2400..0x3fff]);
-                }
-            }
+        //             // Now draw the screen
+        //             DrawScreen(state.memory[0x2400..0x3fff]);
+        //         }
+        //     }
 
-            step++;
-        }
+        //     step++;
+        // }
     }
 
     private void GenerateInterrupt(ref State8080 state, int interruptNum)
@@ -58,9 +69,19 @@ public class SpaceInvader
         state.pc = (ushort)(8 * interruptNum);
     }
 
-    private void DrawScreen(byte[] vram)
+    private void DrawScreen()
     {
+        window.Clear(Color.Black);
 
+        var shape = new RectangleShape(new SFML.System.Vector2f(100, 100))
+        {
+            //Position =
+            FillColor = Color.White
+        };
+
+        window.Draw(shape);
+
+        window.Display();
     }
 
     private string AsHex(int i, int l = 2)

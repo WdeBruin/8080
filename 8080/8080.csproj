@@ -13,4 +13,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="sfml.net" Version="2.5.1" />
+  </ItemGroup>
 </Project>
