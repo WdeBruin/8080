@@ -1,3 +1,6 @@
 ﻿using cpu;
 
-new SpaceInvader().Run();
+
+Task.Run(async () => {
+    new SpaceInvader().Run();
+}).GetAwaiter().GetResult();

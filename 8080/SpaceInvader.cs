@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections;
+using System.Diagnostics;
 using SFML.Graphics;
 using SFML.Window;
 
@@ -10,52 +11,53 @@ public class SpaceInvader
 
     public SpaceInvader()
     {
-        window = new RenderWindow(new VideoMode(256, 224), "display");
+        window = new RenderWindow(new VideoMode(256, 224), "Space Invaders");
     }
 
-    public void Run()
+    public async Task Run()
     {
-        DrawScreen();
-        Thread.Sleep(10_000);
-        // var state = new State8080
-        // {
-        //     memory = new byte[0x4000] //16k (0000 - 1FFF ROM; 2000 - 23FF RAM; 2400 - 3FFF VRAM)
-        // };
+        // todo add input
+        // window.KeyPressed += 
 
-        // var rom = File.ReadAllBytes("invaders");
-        // rom.CopyTo(state.memory, 0); // load the rom
+        int step = 0;
+        Stopwatch s = new Stopwatch();
+        s.Start();
+        long lastInterrupt = 0;
 
-        // var cpuEmu = new OpCode();
+        var state = new State8080
+        {
+            memory = new byte[0x4000] //16k (0000 - 1FFF ROM; 2000 - 23FF RAM; 2400 - 3FFF VRAM)
+        };
 
-        // int step = 0;
+        var rom = File.ReadAllBytes("invaders");
+        rom.CopyTo(state.memory, 0); // load the rom
 
-        // Stopwatch s = new Stopwatch();
-        // s.Start();
-        // long lastInterrupt = 0;
+        var cpuEmu = new OpCode();
 
-        // bool done = false;
-        // while (done != true)
-        // {
-        //     Console.WriteLine($"#{step} -- PC {AsHex(state.pc)} -- SP {AsHex(state.sp)} -- Flags {(state.cc.z ? "Z" : ".")}{(state.cc.ac ? "AC" : ".")}{(state.cc.pad ? "PAD" : ".")}{(state.cc.cy ? "CY" : ".")}{(state.cc.p ? "P" : ".")}{(state.cc.s ? "S" : ".")}");
-        //     Console.WriteLine($"A {AsHex(state.a)} -- BC {AsHex(state.b)}{AsHex(state.c)} -- DE {AsHex(state.d)}{AsHex(state.e)} -- HL {AsHex(state.h)}{AsHex(state.l)} -- {(state.int_enable ? "INT" : ".")}");
-        //     Console.WriteLine();
+        while (window.IsOpen)
+        {
+            // process events
+            window.DispatchEvents();
 
-        //     cpuEmu.Emulate8080Op(ref state);
+            if (s.ElapsedMilliseconds - lastInterrupt > 1.0 / 60.0)
+            {
+                if (state.int_enable)
+                {
+                    GenerateInterrupt(ref state, 2);
+                    lastInterrupt = s.ElapsedMilliseconds;
 
-        //     if (s.ElapsedMilliseconds - lastInterrupt > 1.0 / 60.0)
-        //     {
-        //         if (state.int_enable)
-        //         {
-        //             GenerateInterrupt(ref state, 2);
-        //             lastInterrupt = s.ElapsedMilliseconds;
+                    // Now draw the screen
+                    await DrawScreen(state.memory[0x2400..0x3fff]);
+                }
+            }
 
-        //             // Now draw the screen
-        //             DrawScreen(state.memory[0x2400..0x3fff]);
-        //         }
-        //     }
+            Console.WriteLine($"#{step} -- PC {AsHex(state.pc)} -- SP {AsHex(state.sp)} -- Flags {(state.cc.z ? "Z" : ".")}{(state.cc.ac ? "AC" : ".")}{(state.cc.pad ? "PAD" : ".")}{(state.cc.cy ? "CY" : ".")}{(state.cc.p ? "P" : ".")}{(state.cc.s ? "S" : ".")}");
+            Console.WriteLine($"A {AsHex(state.a)} -- BC {AsHex(state.b)}{AsHex(state.c)} -- DE {AsHex(state.d)}{AsHex(state.e)} -- HL {AsHex(state.h)}{AsHex(state.l)} -- {(state.int_enable ? "INT" : ".")}");
+            Console.WriteLine();
 
-        //     step++;
-        // }
+            cpuEmu.Emulate8080Op(ref state);
+            step++;
+        }
     }
 
     private void GenerateInterrupt(ref State8080 state, int interruptNum)
@@ -69,17 +71,32 @@ public class SpaceInvader
         state.pc = (ushort)(8 * interruptNum);
     }
 
-    private void DrawScreen()
+    private async Task DrawScreen(byte[] vram)
     {
         window.Clear(Color.Black);
 
-        var shape = new RectangleShape(new SFML.System.Vector2f(100, 100))
-        {
-            //Position =
-            FillColor = Color.White
-        };
+        BitArray pixels = new BitArray(vram);
 
-        window.Draw(shape);
+        //byte 0-31 is line 1. each byte has 8 bits for pixels
+        int x = 0;
+        int y = 0;
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            if (i == 32)
+            {
+                y += 1;
+                x = 0;
+            }
+
+            var pixShape = new RectangleShape(new SFML.System.Vector2f(1, 1))
+            {
+                Position = new SFML.System.Vector2f(x, y),
+                FillColor = pixels[i] ? Color.White : Color.Black
+            };
+
+            window.Draw(pixShape);
+            x++;
+        }
 
         window.Display();
     }
