@@ -23,5 +23,5 @@ public struct State8080
     public ushort pc;
     public byte[] memory;
     public ConditionCodes cc;
-    public byte int_enable;
+    public bool int_enable;
 }

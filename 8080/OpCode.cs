@@ -742,7 +742,7 @@ public class OpCode
             case 0xFA: UnimplementedInstruction(state); break;
             case 0xFB: // EI
                 {
-                    // todo enable interrupt                
+                    state.int_enable = true;                
                 }
                 break;
             case 0xFC: UnimplementedInstruction(state); break;
